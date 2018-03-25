@@ -23,7 +23,7 @@ date_default_timezone_set("Asia/Kolkata");
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = '';//http://tellandsell.in/Availableme/
+$config['base_url'] = 'http://localhost:90/ammshop/';//http://tellandsell.in/Availableme/
 
 /*
 |--------------------------------------------------------------------------

@@ -1,33 +1,43 @@
-<?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+<?php defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Admin extends CI_Controller {
-public $site_notification;
-public function __construct() {
-parent::__construct();
+	public $site_notification;
+	public function __construct() {
+		parent::__construct();
 
-// Load form helper library
-$this->load->helper('form');
+		// Load form helper library
+		$this->load->helper('form');
 
-// Load form validation library
-$this->load->library('form_validation');
-$this->load->helper('security','url');
-// Load session library
-$this->load->library('session');
-$this->load->helper('url');
-$this->load->library('excel');
+		// Load form validation library
+		$this->load->library('form_validation');
+		$this->load->helper('security','url');
+		// Load session library
+		$this->load->library('session');
+		$this->load->helper('url');
+		$this->load->library('excel');
 
-// Load database
-$this->load->model('data_model');
+		// Load database
+		$this->load->model('data_model');
 
-$this->load->model('Admin_model');
-$this->site_notification=$this->Admin_model->Getnoticount();
-$this->load->vars($this->site_notification);
+		$this->load->model('Admin_model');
+		$this->site_notification=$this->Admin_model->Getnoticount();
+		$this->load->vars($this->site_notification);
+	}	
 
+	public function index()
+	{
+		if(isset($this->session->userdata['Alogged_in'])) {
+			$data['getdashboard']=$this->Admin_model->getdashboard();
+			//print_r($data['getdashboard']);exit;
+			$this->load->view('Admin/Header');
+			$this->load->view('Admin/index',$data);
+			$this->load->view('Admin/Footer');
+		} else {			
+			$this->Login();
+		}
+	}
 
-}	
-
- /**
+	/**
      * @desc: This method is used to load view
      */
     public function piechart()
@@ -69,19 +79,7 @@ $this->load->vars($this->site_notification);
         $this->load->view('Admin/demologin');
         $this->load->view('Admin/loginfooter');
 	}
-	public function index()
-	{
-		if(isset($this->session->userdata['Alogged_in'])){
-			$data['getdashboard']=$this->Admin_model->getdashboard();
-			//print_r($data['getdashboard']);exit;
-			$this->load->view('Admin/Header');
-			$this->load->view('Admin/index',$data);
-			$this->load->view('Admin/Footer');
-		}else{
-			
-		$this->Login();
-		}
-	}
+
 	//Login
 	public function Login()
     {
