@@ -1,0 +1,4 @@
+(function(){var button,buttonStyles,materialIcons;materialIcons='<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">';buttonStyles='<link href="https://codepen.io/andytran/pen/vLmRVp.css" rel="stylesheet">';button='<a href="http://andytran.me" class="at-button"><i class="material-icons">link</i></a>';document.body.innerHTML+=materialIcons+buttonStyles+button;$('.toggle1').click(function(){$(this).children('i').toggleClass('fa-pencil');if($(this).text()=="Already Registered?")
+{$(this).text("Forgot your password?")}
+else{$(this).text("Already Registered?")}
+$('.form').animate({height:"toggle",'padding-top':'toggle','padding-bottom':'toggle',opacity:"toggle"},"slow")})}).call(this)
