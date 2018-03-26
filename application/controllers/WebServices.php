@@ -27,6 +27,22 @@ class WebServices extends CI_Controller
 	*/
 	public function getCouponCodes()
 	{
+		$this->data = null;
 
+		try {
+			
+			// get the llist of coupon codes
+			$this->data['CouponCodeDetails'] = $this->Admin_model->GetCouponCode();
+			
+			// set the response message
+            $this->output->set_header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(array('status' => '1', 'message' => 'success', 'response' => $this->data)); exit;
+ 
+		} catch (Exception $e) {
+
+			// set the response message
+            $this->output->set_header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(array('status' => '1', 'message' => $e, 'response' => $this->data)); exit;
+		}
 	}
 }
