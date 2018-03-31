@@ -20,7 +20,7 @@
                                         <th>Items Name</th>
                                         <th>Category</th>
                                         <th>Description</th>
-                                        <th>Block/Unblock</th>		
+                                        <th>Actions</th>		
                                     </tr>
                                 </thead>
                                 <tfoot>
@@ -29,7 +29,7 @@
                                         <th>Items Name</th>
                                         <th>Category</th>
                                         <th>Description</th>
-                                         <th>Block/Unblock</th>
+                                         <th>Actions</th>
                                     </tr>
                                 </tfoot>
                                 <tbody ID="ItemsDetails">
@@ -47,8 +47,9 @@
                                         </td>
                                         <td><div style="width:100%; max-height:60px; overflow:auto"><?php echo $item->description;?></div></td>
                                         <td>
-                                            <a href="<?php echo base_url();?>Vendor/ItemDetails/<?php echo $item->item_id;?>" class="clsViewItems" id="idViewItems" title="Edit" data-id="<?php echo $item->item_id;?>" ><i class="glyphicon glyphicon-edit icon-white"  title="View Item Details" data-toggle="tooltip"></i></a>
-                                            
+                                            <a href="<?php echo base_url();?>Vendor/ItemDetails/<?php echo $item->item_id;?>" class="clsViewItems" id="idViewItems" title="Edit" data-id="<?php echo $item->item_id;?>" ><i class="glyphicon glyphicon-eye-open icon-white"  title="View Item Details" data-toggle="tooltip"></i></a>
+                                            <a href="#" class="clsAddQtyType" id="idAddQtyType" data-id="<?php echo $item->item_id;?>" data-subcatid="<?php echo $item->sub_cat_id;?>" data-iname="<?php echo $item->item_name;?>" data-toggle="modal" data-target="#largeModalAddQtyType"><i class="glyphicon glyphicon-plus icon-white"  title="Add Qty Types Details" data-toggle="tooltip"></i></a>
+                                            <?php if($item->verified == 1){?><span class="label label-primary">Verified</span> <?php }else{?><span class="label label-warning">UnVerified</span><?php } ?>
                                         </td>
                                     </tr><?php }}?>
                                 </tbody>
@@ -168,6 +169,66 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="largeModalAddQtyType" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="smallModalLabel">Add Item Qtuantity Types</h4>
+                </div>
+                    <form class="form_add_qty_type" id="form_add_qty_type" method="post" action="<?php echo base_url();?>Vendor/AddQtyTypeForItem" enctype="multipart/form-data"> 
+                    <input type="hidden" name="itemid" id="itemid" value="">
+                    <div class="modal-body">
+                        <div class="row clearfix">
+                            <div class="col-md-4">
+                                <div class="form-group form-float">
+                                    <div class="form-line">
+                                        <input type="text" class="form-control" id="itemname" name="itemname" value="" readonly>
+                                        <label class="form-label">Item Name <b style="color:red">*</b></label>
+                                    </div>
+                                </div>
+                            </div>    
+                            <div class="col-md-4 DivfetchQtytypeForAddQtyType" id="DivfetchQtytypeForAddQtyType">
+                              
+                            </div> 
+                            <div class="col-md-4 DivfetchQty collapse" id="fetchQty">
+                                
+                            </div> 
+                         </div> 
+                        <div class="row clearfix"> 
+                            <div class="col-md-4">
+                                <div class="form-group form-float">
+                                    <div class="form-line">
+                                        <input type="text" class="form-control" id="itemprice" name="itemprice" value="" required>
+                                        <label class="form-label">Item Price <b style="color:red">*</b></label>
+                                    </div>
+                                </div>
+                            </div>                              
+                            <div class="col-md-4">
+                                <div class="form-group form-float">
+                                    <div class="form-line">
+                                        <input type="text" class="form-control" id="stock" name="stock" value="" required>
+                                        <label class="form-label">Stock<b style="color:red">*</b></label>
+                                    </div>
+                                </div>
+                            </div> 
+                            <div class="col-md-4">
+                                <div class="form-group form-float">
+                                    <div class="form-line">
+                                        <input type="text" class="form-control" id="discount" name="discount" value="" required>
+                                        <label class="form-label">Discount <b style="color:red">*</b></label>
+                                    </div>
+                                </div>
+                            </div>                            
+                        </div> 
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary waves-effect" type="submit" id="btnSubmitCourse">SUBMIT</button>
+                        <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">CLOSE</button>
+                    </div>
+                </form>                    
+            </div>
+        </div>
+    </div>
 </section>
 <script>
     $(document).ready(function($){
@@ -201,6 +262,57 @@
                 }
             });
         });
-        
-    });
+        $('#form_add_item').validate({        
+            rules:{
+                'itemname':{remote:{url: "<?php echo base_url();?>Vendor/CheckItemAvailability",type:"post",
+                        data:{
+                        itemnameval:function(){return $("#itemname").val()},
+                        gstamtval:function(){return $("#gstamt").val()},
+                        fiteridval:function(){return $("#txtsubsubsubcatid").val()},
+                        }}
+            }},
+            messages:{
+               'itemname':{remote:"This Item already present!"}
+                    },
+            highlight:function(input){$(input).parents('.form-line').addClass('error')},
+            unhighlight:function(input){$(input).parents('.form-line').removeClass('error')},errorPlacement:function(error,element){$(element).parents('.input-group').append(error);$(element).parents('.form-group').append(error)}
+        });
+        $('.clsAddQtyType').on('click',function(){   
+            var itemid = $(this).data("id");
+            var subcatid=$(this).data('subcatid'); 
+            var iname=$(this).data('iname');      
+            $('.form_add_qty_type input#itemid').val(itemid);
+            $('.form_add_qty_type input#itemname').val(iname).parent().addClass('focused');;
+            $.ajax({
+
+                url: "<?php echo base_url();?>Vendor/GetQtyType",
+                method:"post",
+                data: {'subcatid' : subcatid},
+                success: function(result)
+                {
+                    $('.form_add_qty_type div.DivfetchQtytypeForAddQtyType').html();
+                    $('.form_add_qty_type div.DivfetchQtytypeForAddQtyType').html(result);
+                    $(".form_add_qty_type select.selectpicker").selectpicker("refresh");          
+                },
+                error: function()
+                {
+                    alert("Something went wroung!");
+                }
+            });
+        });
+        $('#form_add_qty_type').validate({        
+            rules:{
+                'qtytype':{remote:{url: "<?php echo base_url();?>Vendor/CheckQtytypeAvailabilityForItem",type:"post",
+                        data:{
+                        itemidval:function(){return $("#itemid").val()},
+                        qtytypeval:function(){return $("#qtytype").val()},
+                        }}
+            }},
+            messages:{
+               'qtytype':{remote:"This qtytype already present for this item!"}
+                    },
+            highlight:function(input){$(input).parents('.form-line').addClass('error')},
+            unhighlight:function(input){$(input).parents('.form-line').removeClass('error')},errorPlacement:function(error,element){$(element).parents('.input-group').append(error);$(element).parents('.form-group').append(error)}
+        });
+    }); 
 </script>

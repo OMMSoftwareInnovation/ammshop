@@ -224,59 +224,13 @@
                             <i class="material-icons">border_color</i>
                             <span>Item Details</span>
                         </a>
-                    </li>                 
-                    <!--li class="<?php if($this->router->method == "AddSubVendor" || $this->router->method == "Vendor" || $this->router->method == "AddVendor" || $this->router->method == "DeliveryBoy" || $this->router->method == "AddDeliveryBoy" || $this->router->method == "Items"){?>active<?php }?>">
-                        <a href="javascript:void(0);" class="menu-toggle">
-                            <i class="material-icons">people</i>
-                            <span>Person Master</span>
-                        </a>
-                        <ul class="ml-menu">                           
-                            <li class="<?php if($this->router->method == "Vendor" || $this->router->method == "AddVendor"){?>active<?php }?>">
-                                <a href="<?php echo base_url();?>Vendor/Vendor">
-                                    <i class="material-icons">person</i>
-                                    <span>Vendor</span>
-                                </a>
-                            </li>
-                            <li class="<?php if($this->router->method == "DeliveryBoy" || $this->router->method == "AddDeliveryBoy"){?>active<?php }?>">
-                                <a href="<?php echo base_url();?>Vendor/DeliveryBoy">
-                                    <i class="material-icons">person</i>
-                                    <span>Delivery Boy</span>
-                                </a>
-                            </li>                      
-                        </ul> 
-                    </li>  
-                    <li class="<?php if($this->router->method == "Orders"){?>active<?php }?>">
-                        <a href="<?php echo base_url();?>Vendor/Orders">
-                            <i class="material-icons">shopping_cart</i>
-                            <span>Orders Details</span>
-                        </a>
-                    </li>   
+                    </li> 
                     <li class="<?php if($this->router->method == "CurrentOrders"){?>active<?php }?>">
                         <a href="<?php echo base_url();?>Vendor/CurrentOrders">
                             <i class="material-icons">add_shopping_cart</i>
                             <span>Current Orders Details</span>
                         </a>
-                    </li>   
-                    <li class="<?php if($this->router->method == "WalletMoney" || $this->router->method == "AddWalletMoney"){?>active<?php }?>">
-                        <a href="<?php echo base_url();?>Vendor/WalletMoney">
-                            <i class="material-icons">money</i>
-                            <span>Wallet Money</span>
-                        </a>
-                    </li>                    
-                    <li class="<?php if($this->router->method == "DeliveryMoneyReporting" ){?>active<?php }?>">
-                        <a href="javascript:void(0);" class="menu-toggle">
-                            <i class="material-icons">done_all</i>
-                            <span>Reports</span>
-                        </a>
-                        <ul class="ml-menu">
-                            <li class="<?php if($this->router->method == "DeliveryMoneyReporting"){?>active<?php }?>">
-                                <a href="<?php echo base_url();?>Vendor/DeliveryMoneyReporting">
-                                    <i class="material-icons">money</i>
-                                    <span>Delivery Money Reporting</span>
-                                </a>
-                            </li>                                               
-                        </ul> 
-                    </li-->        
+                    </li>               
                 </ul>
             </div>
             <!-- #Menu -->

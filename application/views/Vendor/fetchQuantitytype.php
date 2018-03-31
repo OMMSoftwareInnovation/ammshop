@@ -11,10 +11,10 @@
     </div>
 </div>
 <script>
-$(document).ready(function($){
-    $('.selectqtytype').on('change',function(){ 
+$(document).ready(function($){   
+    $('.selectqtytype').on('change',function(){         
         var qtytypeid=$(this).val(); 
-        alert(qtytypeid);
+       
         if(qtytypeid == "")
         {
             $('.DivfetchQty').addClass('collapse');  
