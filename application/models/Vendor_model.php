@@ -272,19 +272,20 @@ Class Vendor_model extends CI_Model {
     }
     public function GetItems($Vid)
     {
-        $this->db->select('items.item_id,items.gst,items.item_name,items.description,items.verified,items.block,vendor.name,vendor.shop_name,vendor.address,vendor.mobile_no,sub_category.sub_cat_name,category.category_name,filters.filt_name');
+        $this->db->select('sub_category.sub_cat_id,items.item_id,items.gst,items.item_name,items.description,items.verified,items.block,vendor.name,vendor.shop_name,vendor.address,vendor.mobile_no,sub_category.sub_cat_name,category.category_name,filters.filt_name');
         $this->db->from('items');
         $this->db->join('vendor','vendor.vid = items.vid');
         $this->db->join('filters','filters.filt_id = items.f_id');
         $this->db->join('sub_category','sub_category.sub_cat_id = filters.sub_cat_id');
         $this->db->join('category','category.cat_id = sub_category.cat_id');
         $this->db->where('items.vid',$Vid);
+        $this->db->order_by('items.item_id','desc');
         $query = $this->db->get();
         return $query->result();        
     }      
     public function GetItemDetails($item_id)
     {
-        $this->db->select('vendor_items.item_id,vendor_items.qtyprice,vendor_items.stock,vendor_items.discount,items.gst,items.item_name,qty_type.qty_type_name,qty.qty_name');
+        $this->db->select('vendor_items.vi_id,vendor_items.verified,vendor_items.created_at,vendor_items.item_id,vendor_items.qtyprice,vendor_items.stock,vendor_items.discount,items.gst,items.item_name,qty_type.qty_type_name,qty.qty_name');
         $this->db->from('vendor_items');
         $this->db->join('items','items.item_id=vendor_items.item_id');
         $this->db->join('qty_type','qty_type.qty_type_id=vendor_items.qtytype_id','left');
@@ -302,6 +303,36 @@ Class Vendor_model extends CI_Model {
         $query = $this->db->get();
         return $query->result();
     }
+    public function CheckItemAvailability($itemnameval,$gstamtval,$fiteridval,$Vid)
+    {
+        $this->db->select('*');
+        $this->db->from('items');
+        $this->db->where('item_name',$itemnameval);
+        $this->db->where('gst',$gstamtval);
+        $this->db->where('f_id',$fiteridval);
+        $this->db->where('vid',$Vid);
+        $query = $this->db->get();
+        if ($query->num_rows() > 0){
+            return 'false';
+        }
+        else{
+            return 'true';
+        }
+    }	
+    public function CheckQtytypeAvailabilityForItem($itemidval,$qtytypeval)
+    {
+        $this->db->select('*');
+        $this->db->from('vendor_items');
+         $this->db->where('item_id',$itemidval);
+        $this->db->where('qtytype_id',$qtytypeval);
+        $query = $this->db->get();
+        if ($query->num_rows() > 0){
+            return 'false';
+        }
+        else{
+            return 'true';
+        }
+    }							
     public function AddItem($item) 
     {
         if($this->db->insert('items',$item))    
@@ -314,6 +345,29 @@ Class Vendor_model extends CI_Model {
             return 0;    
         }
     }
+    public function AddQtyTypeForItem($qtytype)
+    {
+        if($this->db->insert('vendor_items',$qtytype))    
+        {   
+            return 1;    
+        }    
+        else    
+        {    
+            return 0;    
+        }
+    }
+    public function UpdateItemStock($viid,$stock)  
+    { 
+        $this->db->where('vi_id', $viid);   
+        if($this->db->update('vendor_items', $stock))    
+        {    
+            return 1;    
+        }    
+        else    
+        {
+        return 0;    
+        }  
+    }   
     public function insert($data = array()){
         //$insert = $this->db->insert_batch('item_images',$data);
         //return $insert?true:false;
@@ -730,22 +784,10 @@ Class Vendor_model extends CI_Model {
 
         return $query->result();
     }   
-    public function GetCityWiseOrders($city)
+    public function GetCurrentOrderDetails($vid)
     {
-        $condition = "orders.status >0 and orders.status <3";
-       /* $this->db->select('orders.order_id,orders.user_add_id,orders.uid,orders.vi_id,orders.qty,orders.total,orders.discount,orders.status,orders.date,orders.timeslot,orders.deliverydate,paymentmode.Paymentname,orders.invoiceno,orders.walletpay,
-        user_address.address,area.area_name,city.city_name,user.mobile_no,delivery_boy.name as dname,delivery_boy.mobile_no as dmobile_no');
-        $this->db->from('orders');  
-        $this->db->join('user_address','user_address.user_add_id=orders.user_add_id');
-        $this->db->join('city','city.city_id=user_address.city_id','left');
-        $this->db->join('area','area.area_id=user_address.area_id','left');
-        $this->db->join('user','user.uid =orders.uid ');
-        $this->db->join('delivery_boy','delivery_boy.del_id=orders.assigndeliveryboy','left'); 
-        $this->db->join('paymentmode','paymentmode.pmid=orders.paymentmodeid','left'); 
-        $this->db->where('city.city_name',$city);
-        $this->db->where($condition); */
-        
-        $this->db->select('orders.updateattempt,orders.order_id,orders.user_add_id,orders.uid,orders.vi_id,orders.qty,orders.total,orders.discount,orders.status,orders.date,orders.timeslot,orders.deliverydate,paymentmode.Paymentname,orders.invoiceno,orders.walletpay,
+        $condition = "orders.status >0 and orders.status <3 AND items.vid=$vid";
+         $this->db->select('group_concat(vendor_items.vi_id) as vendoritem,orders.updateattempt,orders.order_id,orders.user_add_id,orders.uid,orders.vi_id,orders.qty,orders.total,orders.discount,orders.status,orders.date,orders.timeslot,orders.deliverydate,paymentmode.Paymentname,orders.invoiceno,orders.walletpay,
         user_address.address,area.area_name,city.city_name,user.mobile_no,delivery_boy.name as dname,delivery_boy.mobile_no as dmobile_no,
         group_concat(vendor_items.stock) as istock, group_concat(items.item_name) as iname, group_concat(vendor_items.qtyprice) as iprice');
         $this->db->from('orders');     
@@ -753,17 +795,18 @@ Class Vendor_model extends CI_Model {
         $this->db->join('city','city.city_id=user_address.city_id','left');
         $this->db->join('area','area.area_id=user_address.area_id','left');
         $this->db->join('user','user.uid =orders.uid');
-        $this->db->join('vendor_items','find_in_set(vendor_items.vi_id, orders.vi_id)'); 
+        $this->db->join('vendor_items','find_in_set(vendor_items.vi_id, orders.vi_id)','left'); 
         $this->db->join('items','items.item_id=vendor_items.item_id'); 
-        $this->db->join('vendor','vendor.vid=items.vid'); 
+       $this->db->join('vendor','vendor.vid=items.vid'); 
         $this->db->join('delivery_boy','delivery_boy.del_id=orders.assigndeliveryboy','left'); 
         $this->db->join('paymentmode','paymentmode.pmid=orders.paymentmodeid','left'); 
         $this->db->group_by('orders.order_id');
-       $this->db->where('city.city_name',$city);
-       $this->db->where($condition);
+        $this->db->where($condition);       
         $query = $this->db->get();
+      // print_r($this->db->last_query());exit;
         return $query->result();       
     }
+    
     public function GetCityStatusWiseOrders($city,$orderstatus)
     {
         $condition = "orders.status =". $orderstatus . " AND " . "city.city_name =" . "'" . $city . "'";
@@ -795,7 +838,30 @@ Class Vendor_model extends CI_Model {
         $query = $this->db->get();
         return $query->result();       
     }
-   
+    public function CheckDelBoyAvailability($delid)
+    {
+        $condition = "assigndeliveryboy =". $delid . " AND " ."status >0  AND status <3";
+        $this->db->where($condition);
+        $query = $this->db->get('orders');  
+       
+         if ($query->num_rows() > 0){
+            return 'false';
+        }
+        else{
+            return 'true';
+        }
+    }
+    public function UpdateOrderByVendor($oid,$data)
+    {
+        $this->db->where('order_id', $oid);
+        if($this->db->update("orders",$data))
+        {
+            return 1;
+        }
+        else{
+            return 0;
+        }
+    }
 }
 
 ?>

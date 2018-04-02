@@ -77,7 +77,7 @@
                 <a href="#" class="GenerateInvoice" id="GenerateInvoice" title="GenerateInvoice" data-toggle="modal" data-target="#largeModalInvoice" data-id="<?php echo $order->order_id;?>" data-uid="<?php echo $order->uid;?>" data-uaid="<?php echo $order->user_add_id;?>" data-viid="<?php echo $order->vi_id;?>"><span class="label label-warning">Generate Invoice</span></a>
                 <a href="#" class="clsEditQuantity"  data-id="<?php echo $order->order_id;?>" data-itemid="<?php echo $order->vi_id;?>" data-iname="<?php echo $order->iname;?>" data-iprice="<?php echo $order->iprice;?>" data-updateattempt="<?php echo $order->updateattempt;?>" data-stock="<?php echo $order->istock;?>" data-qty="<?php echo $order->qty;?>"> <span class="label label-default">Edit Qty</span></a>
                 <a href="#" class="clsCancelOrder" data-id="<?php echo $order->order_id;?>"> <span class="label label-danger">Cancel</span></a>
-                <a href="#" class="clsAssignDeliveryBoy" data-id="<?php echo $order->order_id;?>"> <span class="label label-danger">Assign Delivery Boy</span></a>
+                <a href="#" class="clsAssignDeliveryBoy <?php if($order->dname){?>collapse <?php }?>" data-id="<?php echo $order->order_id;?>"> <span class="label label-danger">Assign Delivery Boy</span></a>
             </td>
         </tr><?php }}?>
     </tbody>

@@ -294,6 +294,34 @@ if(isset($this->session->userdata['Vlogged_in']))
         $this->Login();
 		}
 	}
+	public function CheckItemAvailability()
+	{
+		if(isset($this->session->userdata['Vlogged_in']))
+		{
+			$itemnameval = $this->input->post('itemnameval');	
+			$gstamtval = $this->input->post('gstamtval');
+			$fiteridval = $this->input->post('fiteridval');
+			$Vid=$this->session->userdata['Vlogged_in']['Vid'];
+			$result = $this->Vendor_model->CheckItemAvailability($itemnameval,$gstamtval,$fiteridval,$Vid);								
+			echo $result;exit;
+			
+		}else{
+			$this->Login();
+		}
+	}
+	public function CheckQtytypeAvailabilityForItem()
+	{
+		if(isset($this->session->userdata['Vlogged_in']))
+		{
+			$itemidval = $this->input->post('itemidval');	
+			$qtytypeval = $this->input->post('qtytypeval');
+			$result = $this->Vendor_model->CheckQtytypeAvailabilityForItem($itemidval,$qtytypeval);								
+			echo $result;exit;
+			
+		}else{
+			$this->Login();
+		}
+	}
 	public function AddItem()	
 	{
 		$Vid=$this->session->userdata['Vlogged_in']['Vid'];
@@ -303,7 +331,8 @@ if(isset($this->session->userdata['Vlogged_in']))
 			'item_name'=> $this->input->post('itemname'),
 			'gst'=> $this->input->post('gstamt'),
 			'description'=> $this->input->post('description'),
-			//'verified'=> 0,
+			'created_at'=> date('Y-m-d H:i:s'),
+			'verified'=> 0,
 			);
 		$item_id=$this->Vendor_model->AddItem($item);
 		if($item_id)
@@ -371,6 +400,73 @@ if(isset($this->session->userdata['Vlogged_in']))
 						
 					}
 				}
+			}
+		}
+		else
+		{
+			$this->Login();
+		}
+		
+	}
+	public function AddQtyTypeForItem()	
+	{
+		if(isset($this->session->userdata['Vlogged_in']))
+		{
+			$Vid=$this->session->userdata['Vlogged_in']['Vid'];
+			$qtytype = array(			
+			'item_id'=> $this->input->post('itemid'),
+			'qtytype_id'=> $this->input->post('qtytype'),
+			'qty_id'=> $this->input->post('qty'),
+			'qtyprice'=> $this->input->post('itemprice'),
+			'stock'=> $this->input->post('stock'),
+			'discount'=> $this->input->post('discount'),
+			'created_at'=> date('Y-m-d H:i:s'),
+			'verified'=> 0,
+			);		
+			if ($this->Vendor_model->AddQtyTypeForItem($qtytype)) {
+				echo '<script>';
+				echo 'setTimeout(function () {swal("Added!", "Your qty type for given item succesfully added.", "success");';
+				echo '}, 1000);';
+				echo 'setTimeout(function () {window.location.href="'.base_url()."Vendor/Items".'"';
+				echo '}, 2000);</script>';
+				$this->Items();
+			} else {
+				echo '<script>';
+				echo 'setTimeout(function () {swal("Opps!", "There is some problem please try again after some time", "error");';
+				echo '}, 1000);</script>';
+				$this->Items();
+			}
+		}
+		else
+		{
+			$this->Login();
+		}
+		
+	}
+	public function UpdateItemStock()	
+	{
+		if(isset($this->session->userdata['Vlogged_in']))
+		{
+			$viid=$this->input->post('vendoritemid');
+			$stock = array(			
+			'stock'=> $this->input->post('stock'),
+			'qtyprice'=> $this->input->post('itemprice'),
+			'discount'=> $this->input->post('discount'),
+			'updated_at'=> date('Y-m-d H:i:s'),
+			'verified'=> 0,
+			);		
+			if ($this->Vendor_model->UpdateItemStock($viid,$stock)) {
+				echo '<script>';
+				echo 'setTimeout(function () {swal("Updated!", "Item stock succesfully updated.", "success");';
+				echo '}, 1000);';
+				echo 'setTimeout(function () {window.location.href="'.base_url()."Vendor/Items".'"';
+				echo '}, 2000);</script>';
+				$this->Items();
+			} else {
+				echo '<script>';
+				echo 'setTimeout(function () {swal("Opps!", "There is some problem please try again after some time", "error");';
+				echo '}, 1000);</script>';
+				$this->Items();
 			}
 		}
 		else
@@ -875,7 +971,9 @@ if(isset($this->session->userdata['Vlogged_in']))
 	public function CurrentOrders()
 	{
 		if(isset($this->session->userdata['Vlogged_in'])){	
-			$data['DeliveryBoy']=$this->Vendor_model->GetDeliveryBoy();				
+			$vid=$this->session->userdata['Vlogged_in']['Vid'];
+			$data['DeliveryBoy']=$this->Vendor_model->GetDeliveryBoy();	
+			$data['CurrentOrderDetails']=$this->Vendor_model->GetCurrentOrderDetails($vid);				
 			$this->load->view('Vendor/Header');
 			$this->load->view('Vendor/CurrentOrders',$data);
 			$this->load->view('Vendor/Footer');
@@ -1367,7 +1465,7 @@ if(isset($this->session->userdata['Vlogged_in']))
 	{
 		if(isset($this->session->userdata['Vlogged_in'])){
 			$orderid = $this->input->post('orderid');	
-			$delid = $this->input->post('txtdelid');	
+			$delid = $this->input->post('txtdelid');
 			$data = array(
 				'assigndeliveryboy'=> $delid,
 			);		
@@ -1402,4 +1500,5 @@ if(isset($this->session->userdata['Vlogged_in']))
         $this->Login();
 		}
 	}
+	
 }
