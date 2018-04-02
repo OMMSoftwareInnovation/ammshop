@@ -18,6 +18,7 @@ class WebServices extends CI_Controller
 
 		// Load database
 		$this->load->model('data_model');
+
 		// Load database
 		$this->load->model('Admin_model');
 		// Load database
@@ -37,7 +38,7 @@ class WebServices extends CI_Controller
 			
 			// get the llist of coupon codes
 			$this->data['CouponCodeDetails'] = $this->Admin_model->GetCouponCode();
-			//print_r($this->data['CouponCodeDetails']);exit;
+      
 			// set the response message
             $this->output->set_header('Content-Type: application/json; charset=utf-8');
             echo json_encode(array('status' => '1', 'message' => 'success', 'couponcodedetails' => $this->Admin_model->GetCouponCode())); exit;
@@ -140,12 +141,11 @@ class WebServices extends CI_Controller
 				$this->output->set_header('Content-Type: application/json; charset=utf-8');
 				echo json_encode(array('status' => '0', 'message' => 'Failed to get the response', 'response' => '')); exit;	
 			}		
- 
 		} catch (Exception $e) {
 
 			// set the response message
             $this->output->set_header('Content-Type: application/json; charset=utf-8');
-            echo json_encode(array('status' => '0', 'message' => $e, 'response' => $this->data)); exit;
+            echo json_encode(array('status' => '1', 'message' => $e, 'response' => $this->data)); exit;
 		}
 	}
 }
